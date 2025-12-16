@@ -1,5 +1,8 @@
 package sunshine;
 
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
@@ -7,7 +10,8 @@ import org.springframework.web.client.RestClient;
 public class WeatherService {
 
     private final RestClient restClient;
-
+    @Autowired
+    private WeatherGenaiService weatherGenaiService;
     public WeatherService(RestClient restClient) {
         this.restClient = restClient;
     }
@@ -32,13 +36,14 @@ public class WeatherService {
 
         String weatherDesc = WeatherCodeMapper.toKorean(current.getWeather_code());
 
-        String summary = String.format(
-                "현재 %s의 기온은 %.1f°C이며, 체감 온도는 %.1f°C입니다. 날씨는 %s입니다.",
-                city.getName(),
-                current.getTemperature_2m(),
-                current.getApparent_temperature(),
-                weatherDesc
-        );
+//        String summary = String.format(
+//                "현재 %s의 기온은 %.1f°C이며, 체감 온도는 %.1f°C입니다. 날씨는 %s입니다.",
+//                city.getName(),
+//                current.getTemperature_2m(),
+//                current.getApparent_temperature(),
+//                weatherDesc
+//        );
+        String summary = weatherGenaiService.getWeatherSummary(city, current, weatherDesc);
 
         return new WeatherResponse(
                 city.getName(),
